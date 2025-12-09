@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+	<xsl:output method="html" encoding="UTF-8" indent="yes"/>
+	<xsl:template match="/">
+		<html>
+			<head>
+				<title/>
+				<style type="text/css">
+					/*style css*/
+					@media print{
+						.facture{
+							page-break-before:always;
+							height:27cm;
+						}
+					}
+					.facture{
+						width:20cm;
+						/*border:1px solid black;*/
+					}
+					.bloc-adresse{
+						width:6cm;
+						height:4cm;
+						border:1px solid black;
+					}
+					.emeteur{}
+					.client{
+						margin-left:12cm;
+					}
+					.numerofacture{
+						border:1px solid black;
+						background-color:#ACACAC;
+						text-align:center;
+						margin:2cm 4cm;
+						padding:0.3cm;
+						font-weight:900;
+						font-size:large;
+					}
+					table{
+						width:100%;
+						border-spacing: 0;
+						border-collapse: collapse;
+					}
+					table td, table th{
+						border:1px solid black;
+					}
+					table thead{
+						background-color:#AFAFAF;
+					}
+					.no-border{
+						border:none ;
+						text-align:right ;
+					}
+				</style>
+			</head>
+			<body>
+				<div class="facture">
+					<div class="emeteur bloc-adresse">emeteur</div>
+					<div class="client bloc-adresse">client</div>
+					<div class="numerofacture">numero facture</div>
+					<table>
+						<thead>
+							<tr>
+								<th>REF</th>
+								<th>designation</th>
+								<th>€/unit.</th>
+								<th>quant.</th>
+								<th>Total</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td> une ligne</td>
+								<td> une ligne</td>
+								<td> une ligne</td>
+								<td> une ligne</td>
+								<td> une ligne</td>
+							</tr>
+							<tr>
+								<td  class="no-border" colspan="4">Montant total HT :</td>
+								<th/>
+							</tr>
+							<tr>
+								<td  class="no-border" colspan="4">Montant TVA 20% :</td>
+								<th/>
+							</tr>
+							<tr>
+								<td class="no-border" colspan="4">Montant total TTC :</td>
+								<th/>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</body>
+		</html>
+	</xsl:template>
+</xsl:stylesheet>
