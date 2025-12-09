@@ -17,20 +17,21 @@
 				</facturesStat>
 			</statFile>
 			<factures>
-				<xsl:for-each select="//facture">
-					<facture idfacture="" nomClient="">
-						<prixAvgArticle refproduits="a">
-							<xsl:value-of select="sum(.//phtByUnit) div count(.//phtByUnit)"/>
-						</prixAvgArticle>
-						<ligneAvg>
-							<xsl:value-of select="sum(.//stotligne) div count(.//stotligne)"/>
-						</ligneAvg>
-						<nbLignes>
-							<xsl:value-of select="count(.//ligne)"/>
-						</nbLignes>
-					</facture>
-				</xsl:for-each>
+				<xsl:apply-templates select="//facture"/>
 			</factures>
 		</facturation>
+	</xsl:template>
+	<xsl:template match="facture">
+		<facture idfacture="" nomClient="">
+			<prixAvgArticle refproduits="a">
+				<xsl:value-of select="sum(.//phtByUnit) div count(.//phtByUnit)"/>
+			</prixAvgArticle>
+			<ligneAvg>
+				<xsl:value-of select="sum(.//stotligne) div count(.//stotligne)"/>
+			</ligneAvg>
+			<nbLignes>
+				<xsl:value-of select="count(.//ligne)"/>
+			</nbLignes>
+		</facture>
 	</xsl:template>
 </xsl:stylesheet>
