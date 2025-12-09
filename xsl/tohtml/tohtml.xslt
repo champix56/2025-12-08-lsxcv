@@ -56,6 +56,29 @@
 				</style>
 			</head>
 			<body>
+				<table>
+					<tbody>
+						<tr>
+							<th colspan="5">totaux de toutes les factures</th>
+						</tr>
+						<xsl:call-template name="totaux">
+							<xsl:with-param name="nodes" select="//facture[contains(@type,'acture')]"/>
+						</xsl:call-template>
+						<tr>
+							<th colspan="5">totaux de touts les devis</th>
+						</tr>
+						
+						<xsl:call-template name="totaux">
+							<xsl:with-param name="nodes" select="//facture[contains(@type,'evis')]"/>
+						</xsl:call-template>
+						<tr>
+							<th colspan="5">totaux de tout</th>
+						</tr>
+						
+						<xsl:call-template name="totaux"/>
+					</tbody>
+				</table>
+			
 				<xsl:apply-templates select="//facture"/>
 			</body>
 		</html>
@@ -78,18 +101,7 @@
 					</thead>
 					<tbody>
 						<xsl:apply-templates select=".//ligne"/>
-						<tr>
-							<td class="no-border" colspan="4">Montant total HT :</td>
-							<th/>
-						</tr>
-						<tr>
-							<td class="no-border" colspan="4">Montant TVA 20% :</td>
-							<th/>
-						</tr>
-						<tr>
-							<td class="no-border" colspan="4">Montant total TTC :</td>
-							<th/>
-						</tr>
+						<xsl:call-template name="totaux"/>
 					</tbody>
 				</table>
 			</div>
@@ -113,5 +125,22 @@ l'un ou lautre (filtrage par nom de balise dans une position) ou (pipe sur no de
 		<td>
 			<xsl:value-of select="."/>
 		</td>
+	</xsl:template>
+	<xsl:template name="totaux">
+		<xsl:param name="nodes" select="."/>
+		<xsl:variable name="totalHT" select="sum($nodes//stotligne)"/>
+		<xsl:variable name="totalTVA" select="$totalHT*0.2"/>
+		<tr>
+			<td class="no-border" colspan="4">Montant total HT :</td>
+			<th><xsl:value-of select="$totalHT"/></th>
+		</tr>
+		<tr>
+			<td class="no-border" colspan="4">Montant TVA 20% :</td>
+			<th><xsl:value-of select="$totalTVA"/></th>
+		</tr>
+		<tr>
+			<td class="no-border" colspan="4">Montant total TTC :</td>
+			<th><xsl:value-of select="$totalHT+$totalTVA"/></th>
+		</tr>
 	</xsl:template>
 </xsl:stylesheet>
