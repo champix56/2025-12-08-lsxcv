@@ -21,13 +21,18 @@
 			</factures>
 		</facturation>
 	</xsl:template>
-	<xsl:template match="facture[contains(@type,'evis')]" priority="1.1">
-		<!--echapement des devis-->
+	<!--<xsl:template match="facture[contains(@type,'evis')]" priority="1.1">
+		--><!--echapement des devis--><!--
 		<xsl:comment>devis non pris en compte</xsl:comment>
-	</xsl:template>
+	</xsl:template>-->
 	<xsl:template match="/factures/facture">
-		<facture idfacture="" nomClient="">
-			<prixAvgArticle refproduits="a">
+		<facture idfacture="{@numfacture}" nomClient="{@idclient}">
+			<prixAvgArticle>
+				<xsl:attribute name="refproduit">
+					<xsl:for-each select=".//ref">
+						<xsl:value-of select="."/>
+					</xsl:for-each>
+				</xsl:attribute>
 				<xsl:value-of select="sum(.//phtByUnit) div count(.//phtByUnit)"/>
 			</prixAvgArticle>
 			<ligneAvg>
