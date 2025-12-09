@@ -35,6 +35,9 @@
 						font-weight:900;
 						font-size:large;
 					}
+					.table-container{
+						padding:0 1cm;
+					}
 					table{
 						width:100%;
 						border-spacing: 0;
@@ -57,38 +60,40 @@
 					<div class="emeteur bloc-adresse">emeteur</div>
 					<div class="client bloc-adresse">client</div>
 					<div class="numerofacture">numero facture</div>
-					<table>
-						<thead>
-							<tr>
-								<th>REF</th>
-								<th>designation</th>
-								<th>€/unit.</th>
-								<th>quant.</th>
-								<th>Total</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td> une ligne</td>
-								<td> une ligne</td>
-								<td> une ligne</td>
-								<td> une ligne</td>
-								<td> une ligne</td>
-							</tr>
-							<tr>
-								<td  class="no-border" colspan="4">Montant total HT :</td>
-								<th/>
-							</tr>
-							<tr>
-								<td  class="no-border" colspan="4">Montant TVA 20% :</td>
-								<th/>
-							</tr>
-							<tr>
-								<td class="no-border" colspan="4">Montant total TTC :</td>
-								<th/>
-							</tr>
-						</tbody>
-					</table>
+					<div class="table-container">
+						<table>
+							<thead>
+								<tr>
+									<th>REF</th>
+									<th>designation</th>
+									<th>€/unit.</th>
+									<th>quant.</th>
+									<th>Total</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td> une ligne</td>
+									<td> une ligne</td>
+									<td> une ligne</td>
+									<td> une ligne</td>
+									<td> une ligne</td>
+								</tr>
+								<tr>
+									<td class="no-border" colspan="4">Montant total HT :</td>
+									<th/>
+								</tr>
+								<tr>
+									<td class="no-border" colspan="4">Montant TVA 20% :</td>
+									<th/>
+								</tr>
+								<tr>
+									<td class="no-border" colspan="4">Montant total TTC :</td>
+									<th/>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</body>
 		</html>
