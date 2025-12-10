@@ -67,19 +67,22 @@
 							page-break-before:always;
 							height:27cm;
 						}
+						.bloc-adresse{
+							border:none;
+							height:4cm;
+						}
 					}
 					.facture{
 						width:20cm;
 						/*border:1px solid black;*/
 					}
 					.bloc-adresse{
-						width:6cm;
-						height:4cm;
 						border:1px solid black;
+						width:6cm;
 					}
 					.emeteur{}
 					.client{
-						margin-left:12cm;
+						margin-left:14cm;
 					}
 					.numerofacture{
 						border:1px solid black;
