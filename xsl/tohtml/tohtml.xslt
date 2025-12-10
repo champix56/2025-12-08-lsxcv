@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:factureFunc="urn:orsys:lsx:function:facture">
-	<xsl:output method="html" encoding="UTF-8" indent="yes"/>
-	
+	<xsl:include href="toStatistiqueXML.xslt"/>
 	<xsl:variable name="allStotligne">
 		<alltot>
 			<xsl:copy-of select="//stotligne"/>
@@ -14,7 +13,7 @@
 	</xsl:variable>
 	<xsl:template name="somme-arrondi">
 		<xsl:param name="somme" select="0"/>
-		<xsl:param name="current"/>	
+		<xsl:param name="current"/>
 		<xsl:choose>
 			<xsl:when test="$current/following-sibling::*">
 				<xsl:call-template name="somme-arrondi">
@@ -27,12 +26,41 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	
-	<xsl:template match="/">
-		<html>
-			<head>
-				<title/>
-				<style type="text/css">
+	<xsl:template match="factures" mode="html-files">
+		<xsl:result-document href="synthese.html" method="html" encoding="utf-8" indent="yes">
+			<html>
+				<head>
+					<title/>
+				</head>
+				<body>
+					<table>
+						<tbody>
+							<tr>
+								<th colspan="5">totaux de toutes les factures</th>
+							</tr>
+							<xsl:call-template name="totaux">
+								<xsl:with-param name="nodes" select="//facture[contains(@type,'acture')]"/>
+							</xsl:call-template>
+							<tr>
+								<th colspan="5">totaux de touts les devis</th>
+							</tr>
+							<xsl:call-template name="totaux">
+								<xsl:with-param name="nodes" select="//facture[contains(@type,'evis')]"/>
+							</xsl:call-template>
+							<tr>
+								<th colspan="5">totaux de tout</th>
+							</tr>
+							<xsl:call-template name="totaux"/>
+						</tbody>
+					</table>
+				</body>
+			</html>
+		</xsl:result-document>
+		<xsl:result-document href="factures.html" method="html" encoding="utf-8" indent="yes">
+			<html>
+				<head>
+					<title/>
+					<style type="text/css">
 					/*style css*/
 					@media print{
 						.facture{
@@ -81,34 +109,15 @@
 						text-align:right ;
 					}
 				</style>
-			</head>
-			<body>
-				<table>
-					<tbody>
-						<tr>
-							<th colspan="5">totaux de toutes les factures</th>
-						</tr>
-						<xsl:call-template name="totaux">
-							<xsl:with-param name="nodes" select="//facture[contains(@type,'acture')]"/>
-						</xsl:call-template>
-						<tr>
-							<th colspan="5">totaux de touts les devis</th>
-						</tr>
-						
-						<xsl:call-template name="totaux">
-							<xsl:with-param name="nodes" select="//facture[contains(@type,'evis')]"/>
-						</xsl:call-template>
-						<tr>
-							<th colspan="5">totaux de tout</th>
-						</tr>
-						
-						<xsl:call-template name="totaux"/>
-					</tbody>
-				</table>
-			
-				<xsl:apply-templates select="//facture"/>
-			</body>
-		</html>
+				</head>
+				<body>
+					<xsl:apply-templates select="//facture"/>
+				</body>
+			</html>
+		</xsl:result-document>
+	</xsl:template>
+	<xsl:template match="/">
+		<xsl:apply-templates select="/factures" mode="html-files"/>
 	</xsl:template>
 	<xsl:template match="facture">
 		<div class="facture">
@@ -140,7 +149,7 @@
 			<!--<xsl:apply-templates select="nbUnit|ref|designation"/>-->
 		</tr>
 	</xsl:template>
-	<xsl:decimal-format name="eur-currency" grouping-separator=" " decimal-separator="," />
+	<xsl:decimal-format name="eur-currency" grouping-separator=" " decimal-separator=","/>
 	<!--
 l'un ou lautre (filtrage par nom de balise dans une position) ou (pipe sur no de balise ATTENTION aux priorités de match)
 <xsl:template match="ligne/*[name()='stotligne' or name()='phtByUnit']" priority="1">-->
@@ -154,16 +163,12 @@ l'un ou lautre (filtrage par nom de balise dans une position) ou (pipe sur no de
 			<xsl:value-of select="."/>
 		</td>
 	</xsl:template>
-	
 	<xsl:function name="factureFunc:somme-arrondi-stotligne">
 		<xsl:param name="somme"/>
 		<xsl:param name="current"/>
 		<xsl:choose>
 			<xsl:when test="$current/following-sibling::ligne">
-				<xsl:call-template name="somme-arrondi-stotligne">
-					<xsl:with-param name="somme" select="$somme+number(format-number($current/stotligne[1],'0.00'))"/>
-					<xsl:with-param name="current" select="$current/following-sibling::ligne[1]"/>
-				</xsl:call-template>
+				<xsl:value-of select="factureFunc:somme-arrondi-stotligne($somme+number(format-number($current/stotligne[1],'0.00')),$current/following-sibling::ligne[1])"/>
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$somme+number(format-number($current/stotligne,'0.00'))"/>
@@ -171,27 +176,32 @@ l'un ou lautre (filtrage par nom de balise dans une position) ou (pipe sur no de
 		</xsl:choose>
 	</xsl:function>
 	<xsl:template name="totaux">
-		<xsl:param name="nodes" select="." />
+		<xsl:param name="nodes" select="."/>
 		<xsl:variable name="listStotLigne">
 			<totaux>
 				<xsl:copy-of select=".//ligne"/>
 			</totaux>
 		</xsl:variable>
-		<xsl:variable name="totalHT" select=""/>
-		</xsl:variable>
+		<xsl:variable name="totalHT" select="factureFunc:somme-arrondi-stotligne(0,$listStotLigne//ligne[1])"/>
 		<!--<xsl:variable name="totalHT" select="sum($nodes//stotligne)"/>-->
 		<xsl:variable name="totalTVA" select="number(format-number($totalHT*0.2,'0.00'))"/>
 		<tr>
 			<td class="no-border" colspan="4">Montant total HT :</td>
-			<th><xsl:value-of select="format-number($totalHT,'0,00€','eur-currency')"/></th>
+			<th>
+				<xsl:value-of select="format-number($totalHT,'0,00€','eur-currency')"/>
+			</th>
 		</tr>
 		<tr>
 			<td class="no-border" colspan="4">Montant TVA 20% :</td>
-			<th><xsl:value-of select="format-number($totalTVA,'0,00€','eur-currency')"/></th>
+			<th>
+				<xsl:value-of select="format-number($totalTVA,'0,00€','eur-currency')"/>
+			</th>
 		</tr>
 		<tr>
 			<td class="no-border" colspan="4">Montant total TTC :</td>
-			<th><xsl:value-of select="format-number($totalHT+$totalTVA,'0,00€','eur-currency')"/></th>
+			<th>
+				<xsl:value-of select="format-number($totalHT+$totalTVA,'0,00€','eur-currency')"/>
+			</th>
 		</tr>
 	</xsl:template>
 </xsl:stylesheet>
