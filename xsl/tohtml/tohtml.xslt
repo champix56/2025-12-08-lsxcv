@@ -185,7 +185,7 @@ l'un ou lautre (filtrage par nom de balise dans une position) ou (pipe sur no de
 		<xsl:param name="nodes" select="."/>
 		<xsl:variable name="listStotLigne">
 			<totaux>
-				<xsl:copy-of select=".//ligne"/>
+				<xsl:copy-of select="$nodes//ligne"/>
 			</totaux>
 		</xsl:variable>
 		<xsl:variable name="totalHT" select="factureFunc:somme-arrondi-stotligne(0,$listStotLigne//ligne[1])"/>
