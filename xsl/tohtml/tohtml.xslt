@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:factureFunc="urn:orsys:lsx:function:facture">
 	<xsl:output method="html" encoding="UTF-8" indent="yes"/>
 	
 	<xsl:variable name="allStotligne">
@@ -155,8 +155,8 @@ l'un ou lautre (filtrage par nom de balise dans une position) ou (pipe sur no de
 		</td>
 	</xsl:template>
 	
-	<xsl:template name="somme-arrondi-stotligne">
-		<xsl:param name="somme" select="0"/>
+	<xsl:function name="factureFunc:somme-arrondi-stotligne">
+		<xsl:param name="somme"/>
 		<xsl:param name="current"/>
 		<xsl:choose>
 			<xsl:when test="$current/following-sibling::ligne">
@@ -169,7 +169,7 @@ l'un ou lautre (filtrage par nom de balise dans une position) ou (pipe sur no de
 				<xsl:value-of select="$somme+number(format-number($current/stotligne,'0.00'))"/>
 			</xsl:otherwise>
 		</xsl:choose>
-	</xsl:template>
+	</xsl:function>
 	<xsl:template name="totaux">
 		<xsl:param name="nodes" select="." />
 		<xsl:variable name="listStotLigne">
@@ -177,10 +177,7 @@ l'un ou lautre (filtrage par nom de balise dans une position) ou (pipe sur no de
 				<xsl:copy-of select=".//ligne"/>
 			</totaux>
 		</xsl:variable>
-		<xsl:variable name="totalHT">
-			<xsl:call-template name="somme-arrondi-stotligne">
-			<xsl:with-param name="current" select="$listStotLigne//ligne[1]"/>
-			</xsl:call-template>
+		<xsl:variable name="totalHT" select=""/>
 		</xsl:variable>
 		<!--<xsl:variable name="totalHT" select="sum($nodes//stotligne)"/>-->
 		<xsl:variable name="totalTVA" select="number(format-number($totalHT*0.2,'0.00'))"/>
