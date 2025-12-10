@@ -118,16 +118,16 @@
 	</xsl:template>
 	<xsl:template match="factures" mode="xml-files">
 		<xsl:result-document href="stat.xml" method="xml" version="1.0" indent="yes">
-			<xsl:apply-templates select="." />
-		</xsl:result-document>		
+			<xsl:apply-templates select="."/>
+		</xsl:result-document>
 	</xsl:template>
 	<xsl:template match="/">
 		<xsl:apply-templates select="/factures" mode="html-files"/>
 		<xsl:apply-templates select="/factures" mode="xml-files"/>
 	</xsl:template>
-	<xsl:template match="facture"  mode="html-files">
+	<xsl:template match="facture" mode="html-files">
 		<div class="facture">
-			<div class="emeteur bloc-adresse">emeteur</div>
+			<xsl:call-template name="emeteur"/>
 			<div class="client bloc-adresse">client</div>
 			<div class="numerofacture">numero facture</div>
 			<div class="table-container">
@@ -149,7 +149,22 @@
 			</div>
 		</div>
 	</xsl:template>
-	<xsl:template match="ligne"  mode="html-files">
+	<xsl:template name="emeteur">
+		<div class="emeteur bloc-adresse">
+			<xsl:value-of select="/factures/@rsets"/>
+			<br/>
+			<xsl:value-of select="/factures/@adr1ets"/>
+			<br/>
+			<xsl:if test="string-length(/factures/@adr2ets)>0">
+				<xsl:value-of select="/factures/@adr2ets"/>
+				<br/>
+			</xsl:if>
+			<xsl:value-of select="/factures/@cpets"/>
+			<xsl:text> </xsl:text>
+			<xsl:value-of select="/factures/@villeets"/>
+		</div>
+	</xsl:template>
+	<xsl:template match="ligne" mode="html-files">
 		<tr>
 			<xsl:apply-templates select="*[name()!='surface']"/>
 			<!--<xsl:apply-templates select="nbUnit|ref|designation"/>-->
