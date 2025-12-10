@@ -111,15 +111,21 @@
 				</style>
 				</head>
 				<body>
-					<xsl:apply-templates select="//facture"/>
+					<xsl:apply-templates select="//facture" mode="#current"/>
 				</body>
 			</html>
 		</xsl:result-document>
 	</xsl:template>
+	<xsl:template match="factures" mode="xml-files">
+		<xsl:result-document href="stat.xml" method="xml" version="1.0" indent="yes">
+			<xsl:apply-templates select="." />
+		</xsl:result-document>		
+	</xsl:template>
 	<xsl:template match="/">
 		<xsl:apply-templates select="/factures" mode="html-files"/>
+		<xsl:apply-templates select="/factures" mode="xml-files"/>
 	</xsl:template>
-	<xsl:template match="facture">
+	<xsl:template match="facture"  mode="html-files">
 		<div class="facture">
 			<div class="emeteur bloc-adresse">emeteur</div>
 			<div class="client bloc-adresse">client</div>
@@ -136,14 +142,14 @@
 						</tr>
 					</thead>
 					<tbody>
-						<xsl:apply-templates select=".//ligne"/>
+						<xsl:apply-templates select=".//ligne" mode="#current"/>
 						<xsl:call-template name="totaux"/>
 					</tbody>
 				</table>
 			</div>
 		</div>
 	</xsl:template>
-	<xsl:template match="ligne">
+	<xsl:template match="ligne"  mode="html-files">
 		<tr>
 			<xsl:apply-templates select="*[name()!='surface']"/>
 			<!--<xsl:apply-templates select="nbUnit|ref|designation"/>-->
