@@ -11,16 +11,47 @@
 					<fo:region-before extent="2cm" background-image="{/photos/@theme}"/>
 					<fo:region-after extent="1cm" background-image="{/photos/@theme}"/>
 				</fo:simple-page-master>
+				<fo:simple-page-master master-name="A4-portrait-droite" page-height="297mm" page-width="210mm">
+					<fo:region-body background-image="{/photos/@theme}" margin-top="2cm" margin-left="1cm"/>
+					<fo:region-before extent="2cm" background-image="{/photos/@theme}"/>
+					<fo:region-after region-name="after-droite" extent="1cm" background-image="{/photos/@theme}"/>
+					<fo:region-start extent="1cm"  background-color="grey"/>
+				</fo:simple-page-master>
+				<fo:simple-page-master master-name="A4-portrait-gauche" page-height="297mm" page-width="210mm">
+					<fo:region-body background-image="{/photos/@theme}" margin-top="2cm" margin-right="1cm"/>
+					<fo:region-before extent="2cm" background-image="{/photos/@theme}"/>
+					<fo:region-after region-name="after-gauche" extent="1cm" background-image="{/photos/@theme}"/>
+					<fo:region-end extent="1cm" background-color="grey"/>
+				</fo:simple-page-master>
+				<fo:page-sequence-master master-name="A4-portrait-conditionnal">
+					<fo:repeatable-page-master-alternatives>
+						<fo:conditional-page-master-reference master-reference="A4-portrait" page-position="first"/>
+						<fo:conditional-page-master-reference master-reference="A4-portrait-gauche" page-position="rest" odd-or-even="even"/>
+						<fo:conditional-page-master-reference master-reference="A4-portrait-droite" page-position="rest" odd-or-even="odd"/>
+					</fo:repeatable-page-master-alternatives>
+				</fo:page-sequence-master>
 			</fo:layout-master-set>
 			<!--def de sequence(s) de page(s)-->
-			<fo:page-sequence master-reference="A4-portrait">
+			<fo:page-sequence master-reference="A4-portrait-conditionnal">
 				<fo:static-content flow-name="xsl-region-before">
 					<fo:block xsl:use-attribute-sets="external-region big underline">
 						<xsl:value-of select="/photos/titre"/>
 					</fo:block>
 				</fo:static-content>
 				<fo:static-content flow-name="xsl-region-after">
-					<fo:block xsl:use-attribute-sets="external-region" font-size="12pt">
+					<fo:block color="blue" text-decoration="underline" text-align="center">
+						<fo:basic-link external-destination="mailto:{/photos/signature}"><xsl:value-of select="/photos/signature"/></fo:basic-link>
+					</fo:block>
+				</fo:static-content>
+				<!--page de gauche-->
+				<fo:static-content flow-name="after-gauche">
+					<fo:block xsl:use-attribute-sets="external-region" text-align="left" font-size="12pt">
+						<fo:page-number/>/<fo:page-number-citation ref-id="last-page"/>
+					</fo:block>
+				</fo:static-content>
+				<!--page de droite-->
+				<fo:static-content flow-name="after-droite">
+					<fo:block xsl:use-attribute-sets="external-region" text-align="right" font-size="12pt">
 						<fo:page-number/>/<fo:page-number-citation ref-id="last-page"/>
 					</fo:block>
 				</fo:static-content>
