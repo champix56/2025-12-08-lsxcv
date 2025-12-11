@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="form">
+        <form name="form-client">
+            <label for="idclient">id du client</label><br />
+            <select name="idclient" id="idclient">
+                <option value="-1">Tous les clients</option>
+            </select>
+        </form>
+    </div>
+    <div>
+        <h2>Totaux</h2>
+        <div id="wrapper"></div>
+    </div>
+    <script>
+        const loadSelect = async () => {
+            const parserXML = new DOMParser();
+
+            //chargement async de la feuille de transfo XSL
+            let loadFilePromise = await fetch('facture3.xml');
+            let fileTextContent = await loadFilePromise.text();
+
+            //document DOM XSL
+            const XMLDataDocument = parserXML.parseFromString(fileTextContent, "application/xml");
+            const filtredIdClients = XMLDataDocument.evaluate('//@idclient[not(following::facture/@idclient=.)]', XMLDataDocument, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null)
+            let attIdClientNode = null;
+            const selectNode = document.querySelector('select')
+            while (attIdClientNode = filtredIdClients.iterateNext()) {
+                const option = document.createElement('option');
+                option.innerHTML = attIdClientNode.nodeValue;
+                option.value = attIdClientNode.nodeValue;
+                selectNode.appendChild(option);
+            }
+        }
+        const transformationXSL = async (idclient = -1) => {
+            //parser pour creation de document DOM depuis contenu textuel 
+            const parserXML = new DOMParser();
+
+            //chargement async de la feuille de transfo XSL
+            let loadFilePromise = await fetch('totaux.xsl');
+            let fileTextContent = await loadFilePromise.text();
+
+            //document DOM XSL
+            const XSLDocument = parserXML.parseFromString(fileTextContent, "application/xml");
+
+            //chargement async des datas XML
+            loadFilePromise = await fetch('facture3.xml');
+            fileTextContent = await loadFilePromise.text();
+
+            //document DOM de données
+            const XMLData = parserXML.parseFromString(fileTextContent, "application/xml");
+
+
+            //instance de transformateur xSL Natif
+            const processor = new XSLTProcessor();
+            //import du document DOM de la feuilleXSL
+            
+            //si idclient!=-1 alors chargement de parametre de transformation
+            if (idclient != -1) {
+                XSLDocument.getElementsByTagName('xsl:param')[0].setAttribute('select',idclient)
+                console.log( XSLDocument.getElementsByTagName('xsl:param')[0])
+
+            }
+            processor.importStylesheet(XSLDocument);
+
+            // try {
+                const resultDoc = processor.transformToFragment(XMLData, document);
+                console.log(resultDoc.children[0]);
+                const wrapper = document.querySelector('#wrapper');
+                wrapper.innerHTML = "";
+                wrapper.appendChild(resultDoc);
+            // } catch (ex) { console.log(ex); }
+        }
+
+        document.addEventListener('DOMContentLoaded', evt => {
+            loadSelect();
+            transformationXSL();
+            //gestion de formulaire
+            document.querySelector('form').addEventListener('submit', evt => {
+                //annulation du comportement par defaut
+                evt.preventDefault();
+            })
+            //declenchement au changement de selection de l'input
+            document.querySelector('select').addEventListener('change', evt => {
+                transformationXSL(evt.target.value);
+            })
+
+        })
+    </script>
+</body>
+
+</html>
