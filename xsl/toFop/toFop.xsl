@@ -7,15 +7,14 @@
 			<!--def de format(s) de papier-->
 			<fo:layout-master-set>
 				<fo:simple-page-master master-name="A4-portrait" page-height="297mm" page-width="210mm">
-					<fo:region-body background-image="{/photos/@theme}" margin-top="2cm"/>
-					<fo:region-before extent="2cm" background-image="{/photos/@theme}"/>
+					<fo:region-body background-image="{/photos/@theme}"/>
 					<fo:region-after extent="1cm" background-image="{/photos/@theme}"/>
 				</fo:simple-page-master>
 				<fo:simple-page-master master-name="A4-portrait-droite" page-height="297mm" page-width="210mm">
 					<fo:region-body background-image="{/photos/@theme}" margin-top="2cm" margin-left="1cm"/>
 					<fo:region-before extent="2cm" background-image="{/photos/@theme}"/>
 					<fo:region-after region-name="after-droite" extent="1cm" background-image="{/photos/@theme}"/>
-					<fo:region-start extent="1cm"  background-color="grey"/>
+					<fo:region-start extent="1cm" background-color="grey"/>
 				</fo:simple-page-master>
 				<fo:simple-page-master master-name="A4-portrait-gauche" page-height="297mm" page-width="210mm">
 					<fo:region-body background-image="{/photos/@theme}" margin-top="2cm" margin-right="1cm"/>
@@ -40,7 +39,9 @@
 				</fo:static-content>
 				<fo:static-content flow-name="xsl-region-after">
 					<fo:block color="blue" text-decoration="underline" text-align="center">
-						<fo:basic-link external-destination="mailto:{/photos/signature}"><xsl:value-of select="/photos/signature"/></fo:basic-link>
+						<fo:basic-link external-destination="mailto:{/photos/signature}">
+							<xsl:value-of select="/photos/signature"/>
+						</fo:basic-link>
 					</fo:block>
 				</fo:static-content>
 				<!--page de gauche-->
@@ -57,6 +58,15 @@
 				</fo:static-content>
 				<fo:flow flow-name="xsl-region-body">
 					<fo:block>
+						<xsl:if test="//couv">
+							<fo:block xsl:use-attribute-sets="external-region" font-weight="900" font-size="36pt">
+								<fo:block margin-top="4cm"/>
+								<xsl:apply-templates select="//couv/image"/>
+								<fo:block>
+									<xsl:value-of select="//titre"/>
+								</fo:block>
+							</fo:block>
+						</xsl:if>
 						<xsl:apply-templates select="//page"/>
 						<fo:block id="last-page"/>
 					</fo:block>
@@ -95,5 +105,8 @@
 				</xsl:if>
 			</fo:block>
 		</fo:table-cell>
+	</xsl:template>
+	<xsl:template match="couv/image">
+		<fo:external-graphic content-height="100mm" content-width="200mm" scaling="uniform" src="{@path}{@href}"/>
 	</xsl:template>
 </xsl:stylesheet>
